@@ -1,7 +1,8 @@
 require 'sinatra'
 require 'rethinkdb'
 require 'yaml'
-load './fetch.rb'
+load './tv/search.rb'
+load './tv/listings.rb'
 require 'sinatra/reloader' 
 
 

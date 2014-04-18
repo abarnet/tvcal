@@ -9,9 +9,10 @@
         <tr>
             <td><%= airing['AiringTime'].local.strftime('%m/%d') %></td>
             <td><%= airing['AiringTime'].local.strftime('%I:%M %P') %></td>
+            <td><%= airing['Duration']%></td>
             <td><%= airing['Title'] %></td>
-            <td><%= airing['EpisodeTitle'] %></td>
             <td><%= "s#{(airing['season'] || "").rjust(2, '0')}e#{(airing['episode'] || "").rjust(2, '0')}" %></td>
+            <td><%= airing['EpisodeTitle'] %></td>
         </tr>
         <% end %>
     </table>

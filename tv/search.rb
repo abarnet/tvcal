@@ -10,63 +10,61 @@ require 'time'
 # 77689
 
 class Search
-    def initialize(credentials)
-        @key = credentials['key']
-        @shared_secret = credentials['shared_secret']
-    end
+  def initialize(credentials)
+    @key = credentials['key']
+    @shared_secret = credentials['shared_secret']
+  end
 
-    def find_title(query)
-        res = RestClient.get 'http://api.rovicorp.com/search/v2.1/video/search', {
-         :content_type => :json, :accept => :json,
-         params: {
-            entitytype: "tvseries",
-            query: query,
-            language: "en", 
-            country: "US",
-            format: "json",
-            apikey: @key,
-            sig: sig
-          }
+  def find_title(query)
+    res = RestClient.get 'http://api.rovicorp.com/search/v2.1/video/search', {
+      :content_type => :json, :accept => :json,
+      params: {
+        entitytype: "tvseries",
+        query: query,
+        language: "en",
+        country: "US",
+        format: "json",
+        apikey: @key,
+        sig: sig
+      }
+    }
+
+    json = JSON.parse res.to_str
+    first = json["searchResponse"]["results"][0]
+
+    series_id = first['id']
+    series = {'id' => "#{series_id}", 'title' => first["video"]["masterTitle"] }
+
+    begin
+      seasons = RestClient.get 'http://api.rovicorp.com/data/v1.1/video/seasons', {
+        :content_type => :json, :accept => :json,
+        params: {
+          cosmoid: series_id,
+          format: "json",
+          apikey: @key,
+          sig: sig
         }
+      }
+    rescue => e
+      return "Couldn't find seasons for series #{series_id}: " + e.response
+    end
+    seasons = JSON.parse seasons
+    season_info = {}
 
-        json = JSON.parse res.to_str
-
-        first = json["searchResponse"]["results"][0]
-
-        series_id = first['id']
-        series = {'id' => "#{series_id}", 'title' => first["video"]["masterTitle"] }
-
-
-        begin
-            seasons = RestClient.get 'http://api.rovicorp.com/data/v1.1/video/seasons', {
-             :content_type => :json, :accept => :json,
-             params: {
-                cosmoid: series_id,
-                format: "json",
-                apikey: @key,
-                sig: sig
-              }
-            }
-        rescue => e
-            return "Couldn't find seasons for series #{series_id}: " + e.response
-        end
-        seasons = JSON.parse seasons
-        season_info = {}
-
-        seasons['seasons'].each do |season| 
-            number = season['number']
-            next if number == '0'
-            info = JSON.parse RestClient.get season["episodesUri"] + "&sig=#{sig}".to_str
+    seasons['seasons'].each do |season|
+      number = season['number']
+      next if number == '0'
+      info = JSON.parse RestClient.get season["episodesUri"] + "&sig=#{sig}".to_str
 
 
 
-            episodes_info = info['episodes']
-            episodes = []
+      episodes_info = info['episodes']
+      episodes = []
 
-            episodes_info.each do |e|
-                ep_number = e['number']
-                episodes[ep_number.to_i - 1] = {
-                    'id' => /cosmoid=([0-9]+)/.match(e['episodeInfoUri'])[1],
+      episodes_info.each do |e|
+        ep_number = e['number']
+        episodes[ep_number.to_i - 1] = {
+          'id' => /cosmoid=([0-9]+)/.match(e['episodeInfoUri'])[1],
                     'episode' => "#{ep_number}"
                 }
 

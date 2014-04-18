@@ -1,10 +1,12 @@
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//tvcal/uniquenss//NONSGML v1.0//EN
+<% @airings.each do |a| %>
 BEGIN:VEVENT
-DTSTAMP:20140417T170000Z
-DTSTART:20140418T170000Z
-DTEND:20140418T193000Z
-SUMMARY:Game of Thrones
+DTSTAMP:<%= Time.now.ics %>
+DTSTART:<%= a['AiringTime'].ics %>
+DTEND:<%= (a['AiringTime'] + a['Duration'].to_i * 60).ics %>
+SUMMARY:<%= a['Title'] %>
 END:VEVENT
+<% end %>
 END:VCALENDAR

@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+gem 'sinatra'
+gem 'sinatra-contrib', require: 'sinatra/reloader'
+gem 'warden'
+gem 'rethinkdb'
+gem 'rest_client'
+gem 'bcrypt-ruby'

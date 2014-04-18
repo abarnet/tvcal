@@ -1,0 +1,15 @@
+!!!
+%html
+  %head
+    %title TV Schedule
+  %body
+    %table
+      - @airings.each do |airing|
+        %tr
+          %td
+          %td
+          %td
+          %td
+            = airing['Title']
+          %td
+            = airing['EpisodeTitle']

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shows</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th></th>
+        </tr>
+        <% @shows.each do |shows| %>
+        <tr>
+            <td><%= shows['title'] %></td>
+            <td><%= shows['id'] %></td>   
+            <td><% if shows['last_fetch'] %><%= shows['last_fetch'].local.strftime('%m/%d') + " " + shows['last_fetch'].local.strftime('%l:%M %p')%><% end %></td>
+        </tr>
+        <% end %>
+    </table>
+
+
+    <form method='post' action='/shows'>
+        <input type='text' name='title'>
+        <input type='submit' value='add'>
+    </form>
+
+    <a href="/">Showtimes</a>
+    <a href="/populate_data">Refresh Data</a>
+</body>
+</html>

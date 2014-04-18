@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Show Times</title>
+</head>
+<body>
+    <table>
+        <% @airings.each do |airing| %>
+        <tr>
+            <td><%= airing['AiringTime'].local.strftime('%m/%d') %></td>
+            <td><%= airing['AiringTime'].local.strftime('%I:%M %P') %></td>
+            <td><%= airing['Title'] %></td>
+            <td><%= airing['EpisodeTitle'] %></td>
+            <td><%= "s#{(airing['season'] || "").rjust(2, '0')}e#{(airing['episode'] || "").rjust(2, '0')}" %></td>
+        </tr>
+        <% end %>
+    </table>
+    <a href="/shows">Shows</a>
+</body>
+</html>

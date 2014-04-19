@@ -53,10 +53,8 @@ class Search
 
     seasons['seasons'].each do |season|
       number = season['number']
-      next if number == '0'
+      next if number == '0' || season["episodesUri"].nil?
       info = JSON.parse RestClient.get season["episodesUri"] + "&sig=#{sig}".to_str
-
-
 
       episodes_info = info['episodes']
       episodes = []
@@ -77,7 +75,6 @@ class Search
         return series
 
     end
-
 
     private
     def sig

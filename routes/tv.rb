@@ -25,7 +25,7 @@ class TVCal < Sinatra::Base
     env['warden'].authenticate!
     title = params['title']
     search = Search.new(settings.credentials)
-    info = seach::find_title(title)
+    info = search::find_title(title)
     r.table('shows').insert(info).run(@rdb_connection)
 
     redirect to('/shows')

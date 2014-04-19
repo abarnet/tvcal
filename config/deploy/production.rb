@@ -8,6 +8,8 @@ role :app, %w{deploy@breadnotes.com}
 role :web, %w{deploy@breadnotes.com}
 role :db,  %w{deploy@breadnotes.com}
 
+set :rvm_ruby_version, '2.1.1'
+set :rvm_custom_path, '/usr/local/rvm'
 
 # # Extended Server Syntax
 # # ======================

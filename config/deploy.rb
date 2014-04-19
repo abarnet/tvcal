@@ -1,8 +1,12 @@
+require "capistrano/rvm"
+require "capistrano/bundler"
 # config valid only for Capistrano 3.1
 lock '3.2.0'
 
 set :application, 'tvcal'
 set :repo_url, 'git@github.com:abarnet/tvcal.git'
+
+set :pid_path, 'tmp/pids/rackup.pid'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
@@ -26,6 +30,7 @@ set :repo_url, 'git@github.com:abarnet/tvcal.git'
 set :linked_files, %w{config/credentials.yaml}
 
 # Default value for linked_dirs is []
+set :linked_dirs, %w{log tmp/pids tmp/cache}
 # set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
 # Default value for default_env is {}
@@ -36,16 +41,25 @@ set :linked_files, %w{config/credentials.yaml}
 
 namespace :deploy do
 
-  
+  desc 'Start TVCal with Rack'
+  task :start do
+    on roles(:app), in: :sequence, wait: 5 do
+      execute "cd #{current_path}; #{fetch :rvm_custom_path}/bin/rvm #{fetch :rvm_ruby_version} do bundle exec rackup -o 0.0.0.0 -s thin -E production -D -P #{fetch :pid_path}"
+    end
+  end
 
-
+  desc 'Stop TVCal'
+  task :stop do
+    on roles(:app), in: :sequence, wait: 2 do
+      execute "cd #{current_path}; if [ -f #{fetch :pid_path} ] && [ -e /proc/$(cat #{fetch :pid_path}) ]; then kill -9 `cat #{fetch :pid_path}`; rm #{fetch :pid_path}; fi"
+    end
+  end
 
   desc 'Restart application'
   task :restart do
-    on roles(:app), in: :sequence, wait: 5 do
-      execute 'rackup -o 0.0.0.0'
-      # Your restart mechanism here, for example:
-      # execute :touch, release_path.join('tmp/restart.txt')
+    on roles(:app), in: :sequence do
+      invoke 'deploy:stop'
+      invoke 'deploy:start'
     end
   end
 

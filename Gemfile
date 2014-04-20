@@ -10,8 +10,10 @@ gem 'capistrano-bundler'
 gem 'capistrano-rvm'
 gem 'thin'
 gem "sprockets"
+
 gem "yui-compressor"
 
+gem 'therubyracer', :platforms => :ruby
 # I find it well worth to include CoffeeScript and SASS as well
 gem "coffee-script"
 gem "sass"

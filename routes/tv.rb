@@ -4,6 +4,15 @@ class TVCal < Sinatra::Base
   get '/' do
     env['warden'].authenticate!
     @airings = r.table('airings').order_by('AiringTime').run(@rdb_connection).to_a
+
+    @events = @airings.map do |a|
+      {
+        title: a['Title'],
+        start: a['AiringTime'].to_i,
+        end: (a['AiringTime'] + a['Duration'].to_i * 60).to_i
+      }
+    end
+    @nav_tab = "calendar"
     erb "index.html".to_sym
   end
 
@@ -18,6 +27,7 @@ class TVCal < Sinatra::Base
   get '/shows' do
     env['warden'].authenticate!
     @shows = r.table('shows').order_by('title').run(@rdb_connection).to_a
+    @nav_tab = 'shows'
     erb "shows.html".to_sym
   end
 
@@ -30,6 +40,14 @@ class TVCal < Sinatra::Base
 
     redirect to('/shows')
   end
+
+  delete '/shows/:series_id' do
+    series_id = params['series_id']
+    r.table('airings').filter({series_id: series_id}).delete.run(@rdb_connection)
+    r.table('shows').get(series_id).delete.run(@rdb_connection)
+    status 204
+  end
+
 
   get '/search/:query' do
     env['warden'].authenticate!
@@ -56,24 +74,27 @@ class TVCal < Sinatra::Base
 
   get '/populate_data' do
     env['warden'].authenticate!
-    listings = Listings.new(settings.credentials['listings']['key'])
 
-    results = []
+    tvdata = TVData.new(settings.credentials['listings']['key'])
+    results = tvdata.fetch_data(@rdb_connection)
+    # listings = Listings.new(settings.credentials['listings']['key'])
 
-    series = r.table('shows').run(@rdb_connection).to_a
-    series.to_json
-    series.each do |s|
-      last_fetch = s['last_fetch']
-      if !last_fetch.nil? and Time.now - last_fetch < 20 * 60 * 60
-        next
-      end
+    # results = []
 
-      airings = listings.airings s
-      results << r.table('airings').insert(airings, upsert: true).run(@rdb_connection)
+    # series = r.table('shows').run(@rdb_connection).to_a
+    # series.to_json
+    # series.each do |s|
+    #   last_fetch = s['last_fetch']
+    #   if !last_fetch.nil? and Time.now - last_fetch < 20 * 60 * 60
+    #     next
+    #   end
 
-      s['last_fetch'] = Time.now
-      r.table('shows').get(s['id']).update(s).run(@rdb_connection)
-    end
+    #   airings = listings.airings s
+    #   results << r.table('airings').insert(airings, upsert: true).run(@rdb_connection)
+
+    #   s['last_fetch'] = Time.now
+    #   r.table('shows').get(s['id']).update(s).run(@rdb_connection)
+    # end
 
     results.to_json
     redirect to('/')

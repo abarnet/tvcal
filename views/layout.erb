@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TV Calendar</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="/assets/app.css" />
+    <script type="text/javascript" src="/assets/app.js"></script>
+
+  </head>
+  <body>
+    <% unless false and @nav_tab.nil? %>
+    <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">TVCal</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="<%= 'active' if @nav_tab == 'calendar' %>"><a href="/">Calendar</a></li>
+            <li class="<%= 'active' if @nav_tab == 'shows' %>"><a href="/shows">Shows</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <% if @user %>
+              <li><a href="/auth/logout">Logout</a></li>
+            <% else %>
+              <li class="<%= 'active' if @nav_tab == 'login' %>"><a href="/auth/login">Login</a></li>
+            <% end %>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <% end %>
+    <%= yield %>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 require "capistrano/rvm"
 require "capistrano/bundler"
+require "whenever/capistrano"
 # config valid only for Capistrano 3.1
 lock '3.2.0'
 
@@ -7,6 +8,8 @@ set :application, 'tvcal'
 set :repo_url, 'git@github.com:abarnet/tvcal.git'
 
 set :pid_path, 'tmp/pids/rackup.pid'
+
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call

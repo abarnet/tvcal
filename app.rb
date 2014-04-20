@@ -3,6 +3,7 @@ Bundler.require
 
 require 'bcrypt'
 require 'yaml'
+require_relative 'config/rdb_config'
 
 ['tv', 'classes'].each do |folder|
   Dir[File.dirname(__FILE__) + "/#{folder}/*.rb"].each {|file| require file }
@@ -11,25 +12,25 @@ end
 class TVCal < Sinatra::Base
   enable :sessions
 
-  RDB_CONFIG = {
-    :host => ENV['RDB_HOST'] || 'localhost',
-    :port => ENV['RDB_PORT'] || 28015,
-    :db   => ENV['RDB_DB']   || 'tv'
-  }
+  # RDB_CONFIG = {
+  #   :host => ENV['RDB_HOST'] || 'localhost',
+  #   :port => ENV['RDB_PORT'] || 28015,
+  #   :db   => ENV['RDB_DB']   || 'tv'
+  # }
  
   configure do
-    set :db, RDB_CONFIG[:db]
+    set :db, RDB_CONFIG::DB
 
     r = RethinkDB::RQL.new
     begin
-      c = r.connect(:host=> RDB_CONFIG[:host], :port=>RDB_CONFIG[:port])
+      c = r.connect(:host=> RDB_CONFIG::HOST, :port=>RDB_CONFIG::PORT)
     rescue Exception => err
       puts "Cannot connect to RethinkDB database #{RDB_CONFIG[:host]}:#{RDB_CONFIG[:port]} (#{err.message})"
       Process.exit(1)
     end
 
     begin
-      r.db_create(RDB_CONFIG[:db]).run(c)
+      r.db_create(RDB_CONFIG::DB).run(c)
     rescue RethinkDB::RqlRuntimeError => err
       puts "Database already exists."
     end
@@ -57,9 +58,10 @@ class TVCal < Sinatra::Base
   before do
     begin
       r = RethinkDB::RQL.new
-      @rdb_connection = r.connect(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port], :db => settings.db)
+      @rdb_connection = RDB_CONFIG::connection(r) #r.connect(:host => RDB_CONFIG::HOST, :port => RDB_CONFIG::PORT, :db => settings.db)
+      @user = env['warden'].authenticate
     rescue Exception => err
-      logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG[:host]}:#{RDB_CONFIG[:port]} (#{err.message})"
+      logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})"
       halt 501, 'Database not available.'
     end
   end

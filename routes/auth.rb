@@ -25,7 +25,7 @@ class TVCal < Sinatra::Base
 
     def authenticate!
       r = RethinkDB::RQL.new
-      c = r.connect(host: RDB_CONFIG[:host], port: RDB_CONFIG[:port], db: RDB_CONFIG[:db])
+      c = RDB_CONFIG.connection(r)#r.connect(host: RDB_CONFIG[:host], port: RDB_CONFIG[:port], db: RDB_CONFIG[:db])
       user = r.table('users').get(params['user']['username']).run(c)
 
       c.close
@@ -40,6 +40,7 @@ class TVCal < Sinatra::Base
   end
 
   get '/auth/login' do
+    @nav_tab = 'login'
     erb :login
   end
 
@@ -54,7 +55,7 @@ class TVCal < Sinatra::Base
   end
 
   post '/auth/unauthenticated' do
-    @message = "Not Authenticated"
+    @nav_tab = 'login'    
     erb :login
   end
 

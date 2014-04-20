@@ -14,7 +14,7 @@ class Listings
     @key = key
   end
 
-  FIELDS = ["SeriesId", "ProgramId", "Title", "EpisodeTitle", "Copy", "AiringType", "AiringTime", "Duration"]
+  FIELDS = ["ProgramId", "Title", "EpisodeTitle", "Copy", "AiringType", "AiringTime", "Duration"]
 
   def airings(series)
 
@@ -65,6 +65,7 @@ class Listings
 
         data['AiringTime'] = Time.strptime(data['AiringTime'], '%Y-%m-%dT%H:%M:%S%z')
         data['id'] = data["ProgramId"]
+        data['series_id'] = series_id
         series['seasons'].each do |s_num, s|
           s.each do |e|
             if e['id'] == data['id']

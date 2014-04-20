@@ -8,6 +8,9 @@ role :app, %w{deploy@breadnotes.com}
 role :web, %w{deploy@breadnotes.com}
 role :db,  %w{deploy@breadnotes.com}
 
+# there was supposedly a default value, but I was getting an error without it
+set :whenever_roles, [:app]
+
 set :rvm_ruby_version, '2.1.1'
 set :rvm_custom_path, '/usr/local/rvm'
 

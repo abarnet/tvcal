@@ -9,8 +9,18 @@ set :repo_url, 'git@github.com:abarnet/tvcal.git'
 
 set :pid_path, 'tmp/pids/rackup.pid'
 
-set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 
+    # for some reason I have to explicitly set all the whenever default values to get it to work
+    set :whenever_roles,        ->{ :db }
+    set :whenever_command,      ->{ [:bundle, :exec, :whenever] }
+    set :whenever_command_environment_variables, ->{ {} }
+    set :whenever_identifier,   ->{ fetch :application }
+    set :whenever_environment,  ->{ fetch :rails_env, "production" }
+    set :whenever_variables,    ->{ "environment=#{fetch :whenever_environment}" }
+    set :whenever_update_flags, ->{ "--update-crontab #{fetch :whenever_identifier} --set #{fetch :whenever_variables}" }
+    set :whenever_clear_flags,  ->{ "--clear-crontab #{fetch :whenever_identifier}" }
+
+set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 

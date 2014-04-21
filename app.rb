@@ -26,7 +26,7 @@ class TVCal < Sinatra::Base
     js :app, '/assets/js/app.js', [
       '/js/jquery.js',
       '/js/bootstrap.js',
-      '/js/moment.min.js',
+      '/js/moment_min.js',
       '/js/fullcalendar.js',
       '/js/admin.js'
     ]
@@ -41,9 +41,6 @@ class TVCal < Sinatra::Base
     css_compression :scss
     css_compression :simple   # :simple | :sass | :yui | :sqwish
   }
-
-
-
 
   configure do
     set :db, RDB_CONFIG::DB

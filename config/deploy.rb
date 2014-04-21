@@ -79,7 +79,7 @@ namespace :deploy do
   desc 'Precompile Assets'
   task :precompile do
     on roles(:app), in: :sequence do
-      execute :rake 'assetpack:build'
+      execute "cd #{current_path}; #{fetch :rvm_custom_path}/bin/rvm #{fetch :rvm_ruby_version} do bundle exec rake assetpack:build"#execute :rake, 'assetpack:build'
     end
   end
 

@@ -4,7 +4,15 @@
 
 # require File.expand_path('../config/application', __FILE__)
 
-require_relative 'config/rdb_config'
-require_relative 'tv/tv_data'
+#require_relative 'config/rdb_config'
+#require_relative 'tv/tv_data'
+#require File.expand_path('../tv/tv_data', __FILE__)
+
+# sinatra assetpack
+APP_FILE  = 'app.rb'
+APP_CLASS = 'TVCal'
+require 'sinatra/assetpack/rake'
+
+
 
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| load r}

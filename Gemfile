@@ -9,9 +9,9 @@ gem 'capistrano', '~> 3.2.0'
 gem 'capistrano-bundler'
 gem 'capistrano-rvm'
 gem 'thin'
-gem "sprockets"
+gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 
-gem "yui-compressor"
+gem 'yui-compressor', :require => 'yui/compressor'
 
 gem 'therubyracer', :platforms => :ruby
 # I find it well worth to include CoffeeScript and SASS as well

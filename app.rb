@@ -12,12 +12,39 @@ end
 class TVCal < Sinatra::Base
   enable :sessions
 
-  # RDB_CONFIG = {
-  #   :host => ENV['RDB_HOST'] || 'localhost',
-  #   :port => ENV['RDB_PORT'] || 28015,
-  #   :db   => ENV['RDB_DB']   || 'tv'
-  # }
- 
+  set :root, File.dirname(__FILE__) # You must set app root
+
+  register Sinatra::AssetPack
+
+  assets {
+    serve '/js',     from: 'assets/js'        # Default
+    serve '/css',    from: 'assets/css'       # Default
+    #serve '/images', from: 'assets/images'    # Default
+
+    # The second parameter defines where the compressed version will be served.
+    # (Note: that parameter is optional, AssetPack will figure it out.)
+    js :app, '/assets/js/app.js', [
+      '/js/jquery.js',
+      '/js/bootstrap.js',
+      '/js/moment.min.js',
+      '/js/fullcalendar.js',
+      '/js/admin.js'
+    ]
+
+    css :app, '/assets/css/app.css', [
+      '/css/fullcalendar.flat.css',
+      '/css/bootstrap.css',
+      '/css/style.css'
+    ]
+
+    js_compression  :yui    # :jsmin | :yui | :closure | :uglify
+    css_compression :scss
+    css_compression :simple   # :simple | :sass | :yui | :sqwish
+  }
+
+
+
+
   configure do
     set :db, RDB_CONFIG::DB
 

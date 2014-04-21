@@ -1,2 +1,4 @@
 credentials.yaml
 rethinkdb_data
+public
+.sass-cache

@@ -9,10 +9,15 @@
 #require File.expand_path('../tv/tv_data', __FILE__)
 
 # sinatra assetpack
-APP_FILE  = 'app.rb'
-APP_CLASS = 'TVCal'
-require 'sinatra/assetpack/rake'
+# APP_FILE  = 'app.rb'
+# APP_CLASS = 'TVCal'
+# require 'sinatra/assetpack/rake'
 
 
+
+require 'sinatra/asset_pipeline/task'
+require './app'
+
+Sinatra::AssetPipeline::Task.define! TVCal
 
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| load r}

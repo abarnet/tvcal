@@ -27,8 +27,8 @@ class TVCal < Sinatra::Base
       r = RethinkDB::RQL.new
       c = RDB_CONFIG.connection(r)#r.connect(host: RDB_CONFIG[:host], port: RDB_CONFIG[:port], db: RDB_CONFIG[:db])
       user = r.table('users').get(params['user']['username']).run(c)
-
       c.close
+      
       if user.nil?
         fail!("The username you entered does not exist.")
       elsif BCrypt::Password.new(user['password_hash']) == params['user']['password']

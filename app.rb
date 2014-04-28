@@ -23,13 +23,15 @@ class TVCal < Sinatra::Base
   register Sinatra::AssetPipeline
 
   configure do
+    enable :logging
+
     set :db, RDB_CONFIG::DB
 
     r = RethinkDB::RQL.new
     begin
       c = r.connect(:host=> RDB_CONFIG::HOST, :port=>RDB_CONFIG::PORT)
     rescue Exception => err
-      puts "Cannot connect to RethinkDB database #{RDB_CONFIG[:host]}:#{RDB_CONFIG[:port]} (#{err.message})"
+      puts "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})"
       Process.exit(1)
     end
 
@@ -62,7 +64,7 @@ class TVCal < Sinatra::Base
   before do
     begin
       r = RethinkDB::RQL.new
-      @rdb_connection = RDB_CONFIG::connection(r) #r.connect(:host => RDB_CONFIG::HOST, :port => RDB_CONFIG::PORT, :db => settings.db)
+      @rdb_connection = RDB_CONFIG.connection(r) #r.connect(:host => RDB_CONFIG::HOST, :port => RDB_CONFIG::PORT, :db => settings.db)
       @user = env['warden'].authenticate
     rescue Exception => err
       logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})"

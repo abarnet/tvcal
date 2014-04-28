@@ -22,6 +22,9 @@ class TVCal < Sinatra::Base
   set :assets_css_compressor, :yui
   register Sinatra::AssetPipeline
 
+  logger = Logger.new(File.join(File.dirname(__FILE__), 'log/sinatra.log'))
+  use Rack::CommonLogger, logger
+
   configure do
     enable :logging
 

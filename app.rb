@@ -70,7 +70,7 @@ class TVCal < Sinatra::Base
       @rdb_connection = RDB_CONFIG.connection(r) #r.connect(:host => RDB_CONFIG::HOST, :port => RDB_CONFIG::PORT, :db => settings.db)
       @user = env['warden'].authenticate
     rescue Exception => err
-      logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})"
+      logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})\n#{err.backtrace.join('\n')}"
       halt 501, 'Database not available.'
     end
   end

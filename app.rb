@@ -66,18 +66,23 @@ class TVCal < Sinatra::Base
 
   before do
     begin
+      logger.info "before get @rdb_connection"
       r = RethinkDB::RQL.new
       @rdb_connection = RDB_CONFIG.connection(r) #r.connect(:host => RDB_CONFIG::HOST, :port => RDB_CONFIG::PORT, :db => settings.db)
+      logger.info "after get @rdb_connection"
       @user = env['warden'].authenticate
+      logger.info "got @user"
     rescue Exception => err
       logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG::HOST}:#{RDB_CONFIG::PORT} (#{err.message})\n#{err.backtrace.join('\n')}"
-      halt 501, 'Database not available.'
+      halt 501, 'Database not available.' + err.message + "\n" + err.backtrace.join("\n")
     end
   end
 
   after do
     begin
+      logger.info "before close @rdb_connection"      
       @rdb_connection.close if @rdb_connection
+      logger.info "after close @rdb_connection"         
     rescue
       logger.warn "Couldn't close connection"
     end

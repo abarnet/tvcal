@@ -48,7 +48,7 @@ GEM
     ref (1.0.5)
     rest_client (1.7.3)
       netrc (~> 0.7.7)
-    rethinkdb (1.12.0.2)
+    rethinkdb (1.11.0.2)
       json
       ruby-protocol-buffers
       varint
@@ -119,7 +119,7 @@ DEPENDENCIES
   capistrano-rvm
   coffee-script
   rest_client
-  rethinkdb
+  rethinkdb (~> 1.11.0.2)
   sass
   sinatra
   sinatra-asset-pipeline

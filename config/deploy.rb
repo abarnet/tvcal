@@ -2,7 +2,7 @@ require "capistrano/rvm"
 require "capistrano/bundler"
 require "whenever/capistrano"
 # config valid only for Capistrano 3.1
-lock '3.2.0'
+lock '3.2.1'
 
 set :application, 'tvcal'
 set :repo_url, 'git@github.com:abarnet/tvcal.git'
@@ -57,7 +57,7 @@ namespace :deploy do
   desc 'Start TVCal with Rack'
   task :start do
     on roles(:app), in: :sequence, wait: 5 do
-      execute "cd #{current_path}; #{fetch :rvm_custom_path}/bin/rvm #{fetch :rvm_ruby_version} do bundle exec rackup -o 0.0.0.0 -s thin -E production -D -P #{fetch :pid_path}"
+      execute "cd #{current_path}; #{fetch :rvm_custom_path}/bin/rvm #{fetch :rvm_ruby_version} do bundle exec rackup -o 0.0.0.0 -E production -D -P #{fetch :pid_path}"
     end
   end
 

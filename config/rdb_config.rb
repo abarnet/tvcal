@@ -3,7 +3,7 @@ module RDB_CONFIG
   PORT = ENV['RDB_PORT'] || 28015
   DB   = ENV['RDB_DB']   || 'tv'
 
-  def connection(r)   
+  def connection(r)
     r.connect(:host => HOST, :port => PORT, :db => DB)
   end
 

@@ -37,6 +37,7 @@
             title: e.title,
             start: new Date(e.start * 1000),
             end: new Date(e.end * 1000),
+            episode_number: e.episode_number,
             copy: e.copy,
             channel: e.channel || "",
             episode_title: e.episode_title
@@ -52,9 +53,17 @@
         // put your options and callbacks here
         events: es,
         eventRender: function(event, element) {
+            var printTime = function (time) {
+                var time = new Date(time);
+                return time.toLocaleTimeString().replace(/:\d\d /, "");
+            }
+
             element.popover({
-                content: (event.copy || "") + "<div style='width: 400px;'>" + event.channel + "</div>",
-                title: event.episode_title || "Episode Info Missing",
+                content: (event.copy || "") + "<br>" +
+                    event.channel + " " +
+                    printTime(event.start) + "-" + printTime(event.end) +
+                    "<div style='width: 400px;'></div>",
+                title: event.episode_number + " " + (event.episode_title || "Episode Info Missing"),
                 trigger: 'hover',
                 html: true,
                 viewport: { selector: 'body', padding: 0 },

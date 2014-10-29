@@ -5,8 +5,6 @@
 //! momentjs.com
 
 (function (crazy) {
-    console.log("hello ", crazy);
-
     /************************************
         Constants
     ************************************/

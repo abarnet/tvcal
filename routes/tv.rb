@@ -10,7 +10,8 @@ class TVCal < Sinatra::Base
 
     @events = @airings.map do |a|
       {
-        title: "#{a['Title']} s#{(a['season'] || "").rjust(2, '0')}e#{(a['episode'] || "").rjust(2, '0')}",
+        title: a['Title'],
+        episode_number: "s#{(a['season'] || "").rjust(2, '0')}e#{(a['episode'] || "").rjust(2, '0')}",
         start: a['AiringTime'].to_i,
         end: (a['AiringTime'] + a['Duration'].to_i * 60).to_i,
         copy: a['Copy'],
@@ -81,26 +82,8 @@ class TVCal < Sinatra::Base
   get '/populate_data' do
     env['warden'].authenticate!
 
-    tvdata = TVData.new(settings.credentials)#['listings']['key'])
+    tvdata = TVData.new(settings.credentials)
     results = tvdata.fetch_data(@rdb_connection)
-    # listings = Listings.new(settings.credentials['listings']['key'])
-
-    # results = []
-
-    # series = r.table('shows').run(@rdb_connection).to_a
-    # series.to_json
-    # series.each do |s|
-    #   last_fetch = s['last_fetch']
-    #   if !last_fetch.nil? and Time.now - last_fetch < 20 * 60 * 60
-    #     next
-    #   end
-
-    #   airings = listings.airings s
-    #   results << r.table('airings').insert(airings, upsert: true).run(@rdb_connection)
-
-    #   s['last_fetch'] = Time.now
-    #   r.table('shows').get(s['id']).update(s).run(@rdb_connection)
-    # end
 
     results.to_json
     redirect to('/')

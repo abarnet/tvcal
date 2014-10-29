@@ -19,7 +19,7 @@ class TVData
         series.each do |s|
           last_fetch = s['last_fetch']
           if !last_fetch.nil? and Time.now - last_fetch < 20 * 60 * 60
-            #next unless s['title'] == "Parenthood"
+            next
           end
 
           s['seasons'] = search.seasons_info s

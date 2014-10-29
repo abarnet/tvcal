@@ -15,25 +15,9 @@ class Search
     @shared_secret = credentials['shared_secret']
   end
 
-  def find_title(query)
-    res = RestClient.get 'http://api.rovicorp.com/search/v2.1/video/search', {
-      :content_type => :json, :accept => :json,
-      params: {
-        entitytype: "tvseries",
-        query: query,
-        language: "en",
-        country: "US",
-        format: "json",
-        apikey: @key,
-        sig: sig
-      }
-    }
 
-    json = JSON.parse res.to_str
-    first = json["searchResponse"]["results"][0]
-
-    series_id = first['id']
-    series = {'id' => "#{series_id}", 'title' => first["video"]["masterTitle"] }
+  def seasons_info(series)
+    series_id = series['id']
 
     begin
       seasons = RestClient.get 'http://api.rovicorp.com/data/v1.1/video/seasons', {
@@ -66,14 +50,37 @@ class Search
                     'episode' => "#{ep_number}"
                 }
 
-            end
-            season_info[number] = episodes
+          end
+          season_info[number] = episodes
 
-        end
+      end
+#      series['seasons'] = season_info
+      return season_info
+  end
 
-        series['seasons'] = season_info
-        return series
+  def find_title(query)
+    res = RestClient.get 'http://api.rovicorp.com/search/v2.1/video/search', {
+      :content_type => :json, :accept => :json,
+      params: {
+        entitytype: "tvseries",
+        query: query,
+        language: "en",
+        country: "US",
+        format: "json",
+        apikey: @key,
+        sig: sig
+      }
+    }
 
+    json = JSON.parse res.to_str
+    first = json["searchResponse"]["results"][0]
+
+    series_id = first['id']
+
+    series = {'id' => "#{series_id}", 'title' => first["video"]["masterTitle"] }
+    series['seasons'] = seasons_info series
+
+    return series
     end
 
     private

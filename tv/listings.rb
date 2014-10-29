@@ -14,7 +14,11 @@ class Listings
     @key = key
   end
 
-  FIELDS = ["ProgramId", "Title", "EpisodeTitle", "Copy", "AiringType", "AiringTime", "Duration"]
+  FIELDS = [
+    "ProgramId", "Title", "EpisodeTitle", "Copy",
+    "AiringType", "AiringTime", "Duration",
+    "Channel", "CallLetters", "SourceDisplayName", "SourceLongName"
+  ]
 
   def airings(series)
 
@@ -65,12 +69,18 @@ class Listings
 
         data['AiringTime'] = Time.strptime(data['AiringTime'], '%Y-%m-%dT%H:%M:%S%z')
         data['id'] = data["ProgramId"]
+        data['last_fetch'] = Time.now
         data['series_id'] = series_id
+        latest_season = series['seasons'].keys.map {|s| s.to_i}.max
         series['seasons'].each do |s_num, s|
           s.each do |e|
             if e['id'] == data['id']
               data['season'] = s_num
               data['episode'] = e['episode']
+              unless s_num.to_i == latest_season.to_i
+                data['AiringType'] = 'OldSeason'
+                data['debug'] = "s_num: '#{s_num}', latest_season: '#{latest_season}', season_keys: '#{series['seasons'].keys}'"
+              end
             end
           end
         end

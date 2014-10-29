@@ -3,13 +3,19 @@ class TVCal < Sinatra::Base
 
   get '/' do
     env['warden'].authenticate!
-    @airings = r.table('airings').order_by('AiringTime').run(@rdb_connection).to_a
+    @airings = r.table('airings')
+      .filter({'AiringType' => 'New'})
+      .order_by('AiringTime')
+      .run(@rdb_connection).to_a
 
     @events = @airings.map do |a|
       {
-        title: a['Title'],
+        title: "#{a['Title']} s#{(a['season'] || "").rjust(2, '0')}e#{(a['episode'] || "").rjust(2, '0')}",
         start: a['AiringTime'].to_i,
-        end: (a['AiringTime'] + a['Duration'].to_i * 60).to_i
+        end: (a['AiringTime'] + a['Duration'].to_i * 60).to_i,
+        copy: a['Copy'],
+        channel: a['SourceLongName'],
+        episode_title: a['EpisodeTitle']
       }
     end
     @nav_tab = "calendar"
@@ -75,7 +81,7 @@ class TVCal < Sinatra::Base
   get '/populate_data' do
     env['warden'].authenticate!
 
-    tvdata = TVData.new(settings.credentials['listings']['key'])
+    tvdata = TVData.new(settings.credentials)#['listings']['key'])
     results = tvdata.fetch_data(@rdb_connection)
     # listings = Listings.new(settings.credentials['listings']['key'])
 

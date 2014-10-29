@@ -6,8 +6,9 @@
     <br><br>
 
     <table class="table table-condensed">
-        <% @airings.each do |airing| %>
+        <% @airings.reverse.each do |airing| %>
         <tr>
+
             <td><%= airing['AiringTime'].local.strftime('%m/%d') %></td>
             <td><%= airing['AiringTime'].local.strftime('%I:%M') %></td>
 
@@ -15,6 +16,10 @@
 
             <td><%= airing['Title'] %></td>
             <td><%= "s#{(airing['season'] || "").rjust(2, '0')}e#{(airing['episode'] || "").rjust(2, '0')}" %></td>
+            <td class="hidden">
+                <%= airing['last_fetch'] %>
+            </td>
+            <td><%= airing['SourceLongName'] %></td>
             <td><%= airing['EpisodeTitle'] %></td>
         </tr>
         <% end %>
@@ -31,7 +36,10 @@
         es.push({
             title: e.title,
             start: new Date(e.start * 1000),
-            end: new Date(e.end * 1000)
+            end: new Date(e.end * 1000),
+            copy: e.copy,
+            channel: e.channel || "",
+            episode_title: e.episode_title
         });
     }
 
@@ -42,6 +50,17 @@
             right: 'month,agendaWeek,agendaDay'
         },
         // put your options and callbacks here
-        events: es
+        events: es,
+        eventRender: function(event, element) {
+            element.popover({
+                content: (event.copy || "") + "<div style='width: 400px;'>" + event.channel + "</div>",
+                title: event.episode_title || "Episode Info Missing",
+                trigger: 'hover',
+                html: true,
+                viewport: { selector: 'body', padding: 0 },
+                placement: 'auto right',
+                container: 'body'
+            });
+        }
     });
 </script>

@@ -19,7 +19,7 @@ class TVData
         series.each do |s|
           last_fetch = s['last_fetch']
           if !last_fetch.nil? and Time.now - last_fetch < 20 * 60 * 60
-            next
+            next# unless s['title'] == "Parenthood"
           end
 
           s['seasons'] = search.seasons_info s
@@ -33,7 +33,7 @@ class TVData
           airings = listings.airings s
 
           results << r.table('airings')
-            .insert(airings, upsert: true)
+            .insert(airings, conflict: 'replace')
             .run(rdb_connection)
 
           s['last_fetch'] = Time.now

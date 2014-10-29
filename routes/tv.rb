@@ -55,7 +55,6 @@ class TVCal < Sinatra::Base
     status 204
   end
 
-
   get '/search/:query' do
     env['warden'].authenticate!
     search = Search.new(settings.credentials['search'])

@@ -14,9 +14,9 @@ class TVCal < Sinatra::Base
     config.failure_app = self
   end
 
-  Warden::Manager.before_failure do |env,opts|
-    env['REQUEST_METHOD'] = 'POST'
-  end
+  # Warden::Manager.before_failure do |env,opts|
+  #   env['REQUEST_METHOD'] = 'POST'
+  # end
 
   Warden::Strategies.add(:password) do
     def valid?

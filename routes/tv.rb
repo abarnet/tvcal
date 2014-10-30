@@ -1,8 +1,14 @@
 class TVCal < Sinatra::Base
   r = RethinkDB::RQL.new
 
+  def require_auth!
+    unless env['warden'].authenticated?
+      redirect '/auth/login'
+    end
+  end
+
   get '/' do
-    env['warden'].authenticate!
+    require_auth!
     @airings = r.table('airings')
       .filter({'AiringType' => 'New'})
       .order_by('AiringTime')
@@ -32,14 +38,14 @@ class TVCal < Sinatra::Base
   end
 
   get '/shows' do
-    env['warden'].authenticate!
+    require_auth!
     @shows = r.table('shows').order_by('title').run(@rdb_connection).to_a
     @nav_tab = 'shows'
     erb "shows.html".to_sym
   end
 
   post '/shows' do
-    env['warden'].authenticate!
+    require_auth!
     title = params['title']
     search = Search.new(settings.credentials['search'])
     info = search.find_title(title)
@@ -49,6 +55,7 @@ class TVCal < Sinatra::Base
   end
 
   delete '/shows/:series_id' do
+    require_auth!
     series_id = params['series_id']
     r.table('airings').filter({series_id: series_id}).delete.run(@rdb_connection)
     r.table('shows').get(series_id).delete.run(@rdb_connection)
@@ -56,14 +63,14 @@ class TVCal < Sinatra::Base
   end
 
   get '/search/:query' do
-    env['warden'].authenticate!
+    require_auth!
     search = Search.new(settings.credentials['search'])
     info = search.find_title(params[:query])
     return info.to_json
   end
 
   get '/series/:series_id' do
-    env['warden'].authenticate!
+    require_auth!
     series = r.table('shows').get(params[:series_id]).run(@rdb_connection)
     listings = Listings.new(settings.credentials['listings']['key'])
     airings = listings.airings(series)
@@ -71,7 +78,7 @@ class TVCal < Sinatra::Base
   end
 
   get '/delete' do
-    env['warden'].authenticate!
+    require_auth!
     c = r.connect(:host=> RDB_CONFIG[:host], :port=>RDB_CONFIG[:port])
     r.db_drop(settings.db).run(c)
     c.close()
@@ -79,7 +86,7 @@ class TVCal < Sinatra::Base
   end
 
   get '/populate_data' do
-    env['warden'].authenticate!
+    require_auth!
 
     tvdata = TVData.new(settings.credentials)
     results = tvdata.fetch_data(@rdb_connection)

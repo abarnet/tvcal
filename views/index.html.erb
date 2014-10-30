@@ -7,8 +7,12 @@
 
     <table class="table table-condensed">
         <% @airings.reverse.each do |airing| %>
-        <tr>
-
+        <tr <% if airing['AiringTime'].local.to_date > Date.today %>
+                class="success"
+            <% elsif airing['AiringTime'].local.to_date == Date.today  %>
+                class="info"
+            <% end %>
+        >
             <td><%= airing['AiringTime'].local.strftime('%m/%d') %></td>
             <td><%= airing['AiringTime'].local.strftime('%I:%M') %></td>
 
